@@ -260,7 +260,7 @@ exports.reportSendOrNot = async (req, res) => {
             "(COUNT(tb1.hospital_code))-(COUNT(tb2.hospital_code)) AS hospnotsend" +
             " FROM `hospital_sp` AS tb1" +
             " LEFT JOIN (SELECT DISTINCT t1.hospital_code FROM `opd_visits` AS t1" +
-            " WHERE t1.m_visit = '09' AND t1.y_visit = '2024') AS tb2" +
+            " WHERE t1.m_visit = '10' AND t1.y_visit = '2024') AS tb2" +
             " ON tb1.hospital_code = tb2.hospital_code" +
             " WHERE tb1.typename IN ('โรงพยาบาลศูนย์','โรงพยาบาลทั่วไป','โรงพยาบาลชุมชน')" +
             " AND tb1.phase IN (1,2,3)" +
@@ -282,7 +282,7 @@ exports.reportHospsendOrNot = async (req, res) => {
         const { provname, hospital_code } = req.query;
         const sql = "SELECT	tb1.phase,tb1.provname,	tb1.hospital_code,tb1.hospital_name,tb2.hospital_code AS sended" +
             " FROM `hospital_sp` AS tb1" +
-            " LEFT JOIN (SELECT DISTINCT t1.hospital_code FROM `opd_visits` AS t1 WHERE t1.m_visit = '09' AND t1.y_visit = '2024') AS tb2" +
+            " LEFT JOIN (SELECT DISTINCT t1.hospital_code FROM `opd_visits` AS t1 WHERE t1.m_visit = '10' AND t1.y_visit = '2024') AS tb2" +
             " ON tb1.hospital_code = tb2.hospital_code" +
             " WHERE tb1.typename IN ('โรงพยาบาลศูนย์','โรงพยาบาลทั่วไป','โรงพยาบาลชุมชน')" +
             " AND tb1.phase IN (1,2,3)" +
@@ -320,13 +320,19 @@ exports.forLineNotify = (req, res) => {
             "SUM(CASE WHEN tb2.m_visit = '08' THEN tb2.hospsend END) AS hospsend_08," +
             "SUM(CASE WHEN tb2.m_visit = '08' THEN (ROUND(((tb2.hospsend/tb1.totalhosp)*100), 2)) END) AS percent_08," +
             "SUM(CASE WHEN tb2.m_visit = '09' THEN tb2.hospsend END) AS hospsend_09," +
-            "SUM(CASE WHEN tb2.m_visit = '09' THEN (ROUND(((tb2.hospsend/tb1.totalhosp)*100), 2)) END) AS percent_09" +
+            "SUM(CASE WHEN tb2.m_visit = '09' THEN (ROUND(((tb2.hospsend/tb1.totalhosp)*100), 2)) END) AS percent_09," +            
+            "SUM(CASE WHEN tb2.m_visit = '10' THEN tb2.hospsend END) AS hospsend_10," +
+            "SUM(CASE WHEN tb2.m_visit = '10' THEN (ROUND(((tb2.hospsend/tb1.totalhosp)*100), 2)) END) AS percent_10," +
+            "SUM(CASE WHEN tb2.m_visit = '11' THEN tb2.hospsend END) AS hospsend_11," +
+            "SUM(CASE WHEN tb2.m_visit = '11' THEN (ROUND(((tb2.hospsend/tb1.totalhosp)*100), 2)) END) AS percent_11," +
+            "SUM(CASE WHEN tb2.m_visit = '12' THEN tb2.hospsend END) AS hospsend_12," +
+            "SUM(CASE WHEN tb2.m_visit = '12' THEN (ROUND(((tb2.hospsend/tb1.totalhosp)*100), 2)) END) AS percent_12" +
             " FROM (SELECT zone,phase,provname,COUNT(DISTINCT hospital_code) AS totalhosp" +
             " FROM hospital_sp WHERE phase IN ('1','2','3') AND typename IN ('โรงพยาบาลทั่วไป','โรงพยาบาลศูนย์','โรงพยาบาลชุมชน')" +
             " GROUP BY zone, phase, provname ORDER BY zone ASC) AS tb1" +
             " LEFT JOIN (SELECT t2.zone,t2.phase,t1.m_visit,t2.provname,COUNT(DISTINCT t1.hospital_code) hospsend" +
             " FROM opd_visits AS t1 LEFT JOIN hospital_sp AS t2 ON t1.hospital_code = t2.hospital_code" +
-            " WHERE t1.m_visit IN ('01','02','03','04','05','06','07','08','09') AND t1.y_visit = '2024' AND t2.phase IN ('1','2','3')" +
+            " WHERE t1.y_visit = '2024' AND t2.phase IN ('1','2','3')" +
             " GROUP BY t2.zone,t2.phase,t1.m_visit, t2.provname ORDER BY t2.zone ASC) AS tb2" +
             " ON tb1.zone = tb2.zone AND tb1.provname = tb2.provname AND tb1.phase = tb2.phase" +
             " GROUP BY tb1.zone,tb1.phase,tb1.provname,tb1.totalhosp";
@@ -355,7 +361,7 @@ exports.forLineNotify2 = (req, res) => {
             " FROM opd_visits AS t1" +
             " LEFT JOIN hospital_sp AS t2" +
             " ON t1.hospital_code = t2.hospital_code" +
-            " WHERE t1.m_visit IN ('09')" +
+            " WHERE t1.m_visit IN ('10')" +
             " AND t1.y_visit = '2024' AND t2.phase IN ('1','2','3')" +
             " GROUP BY t2.zone ORDER BY t2.zone ASC) AS tb2" +
             " ON tb1.zone = tb2.zone";
